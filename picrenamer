@@ -23,9 +23,9 @@ for file in *; do
 	fi
 	extension="${file##*.}"
 	if [ "$extension" = "webm" ]; then
-		webm_player "$file" 1> /dev/null 2>&1 &
+		$webm_player "$file" 1> /dev/null 2>&1 &
 	else
-		picture_viewer "$file" 1> /dev/null 2>&1 &
+		$picture_viewer "$file" 1> /dev/null 2>&1 &
 	fi
 	subshell=$!
 	printf "Rename: "
@@ -35,5 +35,5 @@ for file in *; do
 	fi
 	mv -n "$file" "renamed/$new.$extension"
 
-	kill "$subshell"
+	kill "$subshell" 1> /dev/null 2>&1
 done
