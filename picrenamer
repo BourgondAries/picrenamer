@@ -32,8 +32,13 @@ for file in *; do
 	read new
 	if [ "$new" == "" ]; then
 		mv -n "$file" "skipped/$file"
+	else
+		mv -n "$file" "renamed/$new.$extension"
+		# If the file could not be moved, rename it in the current folder
+		if [ -f "$file" ]; then
+			mv -n "$file" "$new.$extension"
+		fi
 	fi
-	mv -n "$file" "renamed/$new.$extension"
 
 	kill "$subshell" 1> /dev/null 2>&1
 done
