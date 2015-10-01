@@ -1,0 +1,39 @@
+picture_viewer=eom
+webm_player=vlc
+
+wmctrl -r :ACTIVE: -N Picture\ Renamer
+mkdir -p renamed/
+mkdir -p skipped/
+(
+	while [ true ]; do
+		wmctrl -a Picture\ Renamer
+		sleep 0.2s
+	done
+) &
+echo "$! is the process to be killed when this is done"
+for file in *; do
+	if [ -d "$file" ]; then
+		continue
+	fi
+	echo $file | grep -iP "(\.jpeg|\.png|\.jpg|\.bmp|\.gif|\.webm)$"
+	if [ $? -eq 1 ]; then
+		mkdir -p not_pictures
+		mv -n "$file" not_pictures/
+		continue
+	fi
+	extension="${file##*.}"
+	if [ "$extension" = "webm" ]; then
+		webm_player "$file" 1> /dev/null 2>&1 &
+	else
+		picture_viewer "$file" 1> /dev/null 2>&1 &
+	fi
+	subshell=$!
+	printf "Rename: "
+	read new
+	if [ "$new" == "" ]; then
+		mv -n "$file" "skipped/$file"
+	fi
+	mv -n "$file" "renamed/$new.$extension"
+
+	kill "$subshell"
+done
