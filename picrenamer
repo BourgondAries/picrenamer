@@ -37,3 +37,5 @@ for file in *; do
 
 	kill "$subshell" 1> /dev/null 2>&1
 done
+echo "$! is the process to be killed when this is done"
+echo "ps auxf may show you the process, it will contain a sleep"
