@@ -10,7 +10,8 @@ mkdir -p skipped/
 		sleep 0.2s
 	done
 ) &
-echo "$! is the process to be killed when this is done"
+controller="$!"
+echo "$controller is the process to be killed when this is done"
 for file in *; do
 	if [ -d "$file" ]; then
 		continue
@@ -42,5 +43,6 @@ for file in *; do
 
 	kill "$subshell" 1> /dev/null 2>&1
 done
-echo "$! is the process to be killed when this is done"
+kill "$controller"
+echo "$controller is the process to be killed when this is done"
 echo "ps auxf may show you the process, it will contain a sleep"
