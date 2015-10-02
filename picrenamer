@@ -1,5 +1,15 @@
+############################################################
+# Set up basic system
+############################################################
+function require {
+	command -v "$1" 1>/dev/null 2 >& 1 || { echo >& 2 "I require $1, but it's not installed. Aborting."; exit 1; }
+}
+
 picture_viewer=eom
 webm_player=vlc
+
+$(require "$picture_viewer")
+$(require "$webm_player")
 
 wmctrl -r :ACTIVE: -N Picture\ Renamer
 mkdir -p renamed/
@@ -12,7 +22,10 @@ mkdir -p skipped/
 ) &
 controller="$!"
 trap "kill $controller; exit" SIGINT
-echo "$controller is the process to be killed when this is done"
+
+############################################################
+# Main loop
+############################################################
 for file in *; do
 	if [ -d "$file" ]; then
 		continue
@@ -25,11 +38,11 @@ for file in *; do
 	fi
 	extension="${file##*.}"
 	if [ "$extension" = "webm" ]; then
-		$webm_player "$file" 1> /dev/null 2>&1 &
+		$webm_player "$file" 1 > /dev/null 2 >& 1 &
 	else
-		$picture_viewer "$file" 1> /dev/null 2>&1 &
+		$picture_viewer "$file" 1 > /dev/null 2>&1 &
 	fi
-	subshell=$!
+	subshell="$!"
 	printf "Rename: "
 	read new
 	if [ "$new" == "" ]; then
@@ -42,8 +55,7 @@ for file in *; do
 		fi
 	fi
 
-	kill "$subshell" 1> /dev/null 2>&1
+	kill "$subshell" 1 > /dev/null 2 >& 1
 done
 kill "$controller"
-echo "$controller is the process to be killed when this is done"
-echo "ps auxf may show you the process, it will contain a sleep"
+############################################################
