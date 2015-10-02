@@ -11,6 +11,7 @@ mkdir -p skipped/
 	done
 ) &
 controller="$!"
+trap "kill $controller; exit" SIGINT
 echo "$controller is the process to be killed when this is done"
 for file in *; do
 	if [ -d "$file" ]; then
