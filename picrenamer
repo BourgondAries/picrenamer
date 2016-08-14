@@ -1,11 +1,13 @@
+#! /bin/bash
 ############################################################
 # Set up basic system
 ############################################################
 function require {
-	command -v "$1" 1>/dev/null 2 >& 1 || { echo >& 2 "I require $1, but it's not installed. Aborting."; exit 1; }
+	command -v "$1" 1>/dev/null 2 >& 1 || \
+	{ echo >& 2 "I require $1, but it's not installed. Aborting."; exit 1; }
 }
 
-picture_viewer=eom
+picture_viewer=eog
 webm_player=vlc
 
 $(require "$picture_viewer")
@@ -21,12 +23,13 @@ mkdir -p skipped/
 	done
 ) &
 controller="$!"
-trap "kill $controller; exit" SIGINT
+trap "kill -9 $controller; exit" SIGINT
 
 ############################################################
 # Main loop
 ############################################################
 for file in *; do
+	echo "$(ls | wc -l) elements left";
 	if [ -d "$file" ]; then
 		continue
 	fi
@@ -55,7 +58,7 @@ for file in *; do
 		fi
 	fi
 
-	kill "$subshell" 1 > /dev/null 2 >& 1
+	kill "$subshell" 1> /dev/null 2>& 1
 done
 kill "$controller"
 ############################################################
